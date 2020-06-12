@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  web:
+    container_name: web
+    image: opengxp/backend:0.0.11a
+    environment:
+      - REDIS_HOST=redis
+      - CACHE=1
+      - ROLE=admin
+      - USERNAME=admin
+      - PASSWORD=someinitialpassword
+      - EMAIL=example@example.com
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data/web/data
+      - ./forms/keys:/data/web/forms/keys
+      - ./logs:/data/web/logs
+  app:
+    container_name: app
+    image: opengxp/frontend:0.0.5
+    ports:
+      - "80:80"
+    environment:
+      - VUE_APP_BACKEND=http://127.0.0.1:8000
+  redis:
+    container_name: redis
+    image: redis:4.0
