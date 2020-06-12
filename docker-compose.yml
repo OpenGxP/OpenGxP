@@ -15,7 +15,7 @@ services:
       - "8000:8000"
     volumes:
       - ./data:/data/web/data
-      - ./forms/keys:/data/web/forms/keys
+      - ./keys:/data/web/forms/keys
       - ./logs:/data/web/logs
   app:
     container_name: app
