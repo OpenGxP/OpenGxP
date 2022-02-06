@@ -7,29 +7,18 @@ services:
     image: opengxp_backend:0.0.14
     build: https://github.com/OpenGxP/FormsBackend.git#dev
     environment:
-      - REDIS_HOST=opengxp_redis
-      - CACHE=1
+      # content
       - ROLE=admin
       - USERNAME=admin
       - PASSWORD=someinitialpassword
       - EMAIL=example@example.com
-      - DEBUG=0
+      # env
+      - REDIS_HOST=opengxp_redis
+      - CACHE=1
       - ALLOWED_HOSTS=localhost
       - SESSION_COOKIE_DOMAIN=localhost
       - CORS_ORIGIN_WHITELIST=localhost
-      - CSRF_COOKIE_SECURE=1
-      - CSRF_USE_SESSIONS=1
       - CSRF_TRUSTED_ORIGINS=localhost
-      - SESSION_COOKIE_SECURE=1
-      - SESSION_COOKIE_HTTPONLY=1
-      - SECURE_CONTENT_TYPE_NOSNIFF=1
-      - SECURE_BROWSER_XSS_FILTER=1
-      - SECURE_HSTS_INCLUDE_SUBDOMAINS=1
-      - SECURE_SSL_REDIRECT=1
-      - SECURE_HSTS_PRELOAD=1
-      - SECURE_HSTS_SECONDS=31536000
-      - SESSION_COOKIE_AGE=3600
-      - SECURE_PROXY_SSL_HEADER=1
     expose:
       - "8000"
     volumes:
