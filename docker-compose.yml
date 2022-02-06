@@ -1,29 +1,75 @@
-version: '3'
+version: "3.9"
 
 services:
-  web:
-    container_name: web
-    image: opengxp/backend:0.0.11a
+  backend:
+    restart: always
+    container_name: opengxp_backend
+    image: opengxp_backend:0.0.14
+    build: https://github.com/OpenGxP/FormsBackend.git#dev
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=opengxp_redis
       - CACHE=1
       - ROLE=admin
       - USERNAME=admin
       - PASSWORD=someinitialpassword
       - EMAIL=example@example.com
-    ports:
-      - "8000:8000"
+      - DEBUG=0
+      - ALLOWED_HOSTS=localhost
+      - SESSION_COOKIE_DOMAIN=localhost
+      - CORS_ORIGIN_WHITELIST=localhost
+      - CSRF_COOKIE_SECURE=1
+      - CSRF_USE_SESSIONS=1
+      - CSRF_TRUSTED_ORIGINS=localhost
+      - SESSION_COOKIE_SECURE=1
+      - SESSION_COOKIE_HTTPONLY=1
+      - SECURE_CONTENT_TYPE_NOSNIFF=1
+      - SECURE_BROWSER_XSS_FILTER=1
+      - SECURE_HSTS_INCLUDE_SUBDOMAINS=1
+      - SECURE_SSL_REDIRECT=1
+      - SECURE_HSTS_PRELOAD=1
+      - SECURE_HSTS_SECONDS=31536000
+      - SESSION_COOKIE_AGE=3600
+      - SECURE_PROXY_SSL_HEADER=1
+    expose:
+      - "8000"
     volumes:
       - ./data:/data/web/data
       - ./keys:/data/web/forms/keys
-      - ./logs:/data/web/logs
-  app:
-    container_name: app
-    image: opengxp/frontend:0.0.5
+      - ./logs/django:/data/web/logs
+  nginx:
+    restart: always
+    container_name: opengxp_nginx
+    image: opengxp_nginx:0.0.1
+    build: https://github.com/OpenGxP/FormsNginx.git#dev
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+      - ./dumps/nginx:/var/dump/nginx
     ports:
       - "80:80"
+      - "443:443"
     environment:
-      - VUE_APP_BACKEND=http://127.0.0.1:8000
+      - NGINX_HOST=localhost
+      - NGINX_HOST_MAIN=localhost
+      - BACKEND_SERVER=opengxp_backend
+      - BACKEND_PORT=8000
+      - RESORVER_IPS=1.1.1.1 8.8.8.8
+      - VUE_APP_BACKEND=https://localhost/api
+    secrets:
+      - site.key
+      - site.crt
+      - chain.pem
+      - dhparam.pem
   redis:
-    container_name: redis
+    restart: always
+    container_name: opengxp_redis
     image: redis:4.0
+
+secrets:
+  site.key:
+    file: ./secrets/site.key
+  site.crt:
+    file: ./secrets/site.crt
+  chain.pem:
+    file: ./secrets/chain.pem
+  dhparam.pem:
+    file: ./secrets/dhparam.pem
